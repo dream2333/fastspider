@@ -1,0 +1,4 @@
+DEFAULT_JSON_ENCODER=1
+
+def test():
+    print(DEFAULT_JSON_ENCODER)

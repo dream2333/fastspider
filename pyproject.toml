@@ -11,6 +11,7 @@ aiohttp = {extras = ["speedups"], version = "^3.8.4"}
 uvloop = "^0.17.0"
 orjson = "^3.9.1"
 loguru = "^0.7.0"
+parsel = "^1.8.1"
 
 
 [build-system]

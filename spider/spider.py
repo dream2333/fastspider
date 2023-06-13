@@ -8,17 +8,8 @@ class Spider(metaclass=ABCMeta):
 
     @abstractmethod
     def start_requests(self):
-        yield str
+        yield None
 
-
-class TestSpider(Spider):
-    def start_requests(self):
-        for i in range(5):
-            Request = {"url": "https://www.baidu.com/content-search.xml", "callback": "parse"}
-            yield Request
-
-    def parse(self, response):
-        print(response)
 
 if __name__ == "__main__":
     print(Spider())

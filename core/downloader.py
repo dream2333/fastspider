@@ -1,5 +1,6 @@
 import aiohttp
 import orjson
+from models import Request, Response
 
 
 def serializer(jsonstr):
@@ -14,14 +15,15 @@ class Downloader:
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
+    async def close(self):
         await self.client.close()
-        if exc:
-            print(exc_type, exc, tb)
 
     async def request(self, url, method="GET", verify_ssl=False, **kwargs):
         async with aiohttp.request(method, url, verify_ssl=verify_ssl, **kwargs) as response:
             return await response.text()
 
-    async def request_with_session(self, url, method="GET", verify_ssl=False, **kwargs):
-        response = await self.client.request(method, url, verify_ssl=verify_ssl, **kwargs)
-        return response
+    async def request_with_session(self, request: Request):
+        response = await self.client.request(**request.__req_args__)
+        return Response(response)

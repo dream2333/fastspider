@@ -1,7 +1,5 @@
-from collections import 
-from abc import 
 
-def test():
-    yield 1 
-
-print(isinstance(test()))
+import test2
+while True:
+    test2.DEFAULT_JSON_ENCODER = input()
+    test2.test()
