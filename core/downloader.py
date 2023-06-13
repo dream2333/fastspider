@@ -26,4 +26,4 @@ class Downloader:
 
     async def request_with_session(self, request: Request):
         response = await self.client.request(**request.__req_args__)
-        return Response(response)
+        return await Response.build(request, response)

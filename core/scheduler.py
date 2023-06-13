@@ -1,7 +1,7 @@
 import asyncio
+from typing import Callable, Generator, AsyncGenerator, Coroutine
 from core.downloader import Downloader
 from loguru import logger
-from collections.abc import Coroutine, AsyncGenerator
 from models.request import Request
 
 
@@ -11,11 +11,10 @@ class Scheduler:
         self.request_queue = asyncio.Queue()
         self.downloader = Downloader()
 
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.downloader.close()
+    async def open_spider(self):
+        spider_producer = self.add_requests_to_queue(None, "start_requests")
+        spider_consumer = self.consumer()
+        await asyncio.gather(spider_producer, spider_consumer)
 
     async def consumer(self):
         while True:
@@ -31,16 +30,20 @@ class Scheduler:
             rets = callback()
         else:
             rets = callback(response)
-        if isinstance(rets, AsyncGenerator):
+        if isinstance(rets, Generator):
+            for ret in rets:
+                if ret is not None:
+                    await self.request_queue.put(ret)
+        elif isinstance(rets, AsyncGenerator):
             async for ret in rets:
                 if ret is not None:
                     await self.request_queue.put(ret)
-                    logger.debug(ret)
         elif isinstance(rets, Coroutine):
-            ret = await rets
-            if ret is not None:
+            if await rets is not None:
                 await self.request_queue.put(ret)
-                logger.debug(ret)
+        elif isinstance(callback, Callable):
+            if rets is not None:
+                await self.request_queue.put(ret)
 
     async def next_request(self, request: Request):
         response = await self.downloader.request_with_session(request)
@@ -50,7 +53,8 @@ class Scheduler:
         else:
             await self.add_requests_to_queue(response, request.callback)
 
-    async def run(self):
-        spider_producer = self.add_requests_to_queue(None, "start_requests")
-        spider_consumer = self.consumer()
-        await asyncio.gather(spider_producer, spider_consumer)
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.downloader.close()
