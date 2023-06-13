@@ -16,6 +16,6 @@ class TestSpider(Spider):
 
     def parse2(self, response:Response):
         text = response.text
-        print(text)
+        print(response.encoding)
         print("第三层")
 

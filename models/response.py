@@ -12,6 +12,20 @@ from models import Request
 
 
 class Response:
+    __slots__ = (
+        "url",
+        "raw_response",
+        "status",
+        "headers",
+        "cookies",
+        "body",
+        "meta",
+        "request",
+        "__text",
+        "__json",
+        "__encoding",
+    )
+
     @classmethod
     async def build(cls, request: Request, response: ClientResponse) -> None:
         obj = cls.__new__(cls)
@@ -23,25 +37,25 @@ class Response:
         obj.body = await response.read()
         obj.meta = request.meta
         obj.request = request
-        obj._text = None
-        obj._json = None
-        obj._encoding = None
+        obj.__text = None
+        obj.__json = None
+        obj.__encoding = None
         return obj
 
     @property
     def text(self) -> str:
-        if self._text is None:
-            self._text = self.body.decode(self.encoding)
-        return self._text
+        if self.__text is None:
+            self.__text = self.body.decode(self.encoding)
+        return self.__text
 
     @property
     def json(self) -> Any:
-        if self._json is None:
-            self._json = orjson.loads(self.body)
-        return self._json
+        if self.__json is None:
+            self.__json = orjson.loads(self.text)
+        return self.__json
 
     @property
     def encoding(self) -> str:
-        if self._encoding is None:
-            self._encoding = self.raw_response.get_encoding()
-        return self._encoding
+        if self.__encoding is None:
+            self.__encoding = self.raw_response.get_encoding()
+        return self.__encoding
