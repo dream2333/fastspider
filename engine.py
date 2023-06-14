@@ -20,7 +20,6 @@ def suppress_keyboard_interrupt_message():
             old_excepthook(exctype, value, traceback)
         else:
             print("\键盘中断 ...")
-
     sys.excepthook = new_hook
 
 if __name__ == "__main__":

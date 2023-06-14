@@ -1,5 +1,8 @@
+from msgspec import Struct
+from abc import ABCMeta
 
-class Item:
+
+class BaseItem(metaclass=ABCMeta):
     def __init__(self, name, price):
         ...
 

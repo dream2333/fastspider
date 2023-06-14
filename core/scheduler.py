@@ -13,10 +13,10 @@ class Scheduler:
 
     async def open_spider(self):
         spider_producer = self.add_requests_to_queue(None, "start_requests")
-        spider_consumer = self.consumer()
+        spider_consumer = self.start_download_requests()
         await asyncio.gather(spider_producer, spider_consumer)
 
-    async def consumer(self):
+    async def start_download_requests(self):
         while True:
             request = await self.request_queue.get()
             # 消费Request，打包成task

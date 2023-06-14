@@ -12,7 +12,12 @@ uvloop = "^0.17.0"
 orjson = "^3.9.1"
 loguru = "^0.7.0"
 parsel = "^1.8.1"
+msgspec = "^0.16.0"
+pyzmq = "^25.1.0"
 
+
+[tool.poetry.group.dev.dependencies]
+memray = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core"]

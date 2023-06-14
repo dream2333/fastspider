@@ -1,20 +1,45 @@
-import asyncio
-import aiohttp
-async def fetch(session, url):
-    # with语句保证在处理session的时候，总是能正确的关闭它
-    async with session.get(url) as resp:
-        # 1.如果想要得到结果，则必须使用await关键字等待请求结束，如果没有await关键字，得到的是一个生成器
-        # 2.text()返回的是字符串的文本，read()返回的是二进制的文本
-        data = await resp.text()
-        print('data', data)
-        return data
+from msgspec import Struct, msgpack, json
+import json as _json
+import orjson
+from models import Request
+
+js = None
+with open("test.json", "rb") as f:
+    js = f.read()
 
 
-async def run():
-    async with aiohttp.ClientSession() as session:
-        html_data = await fetch(session, "http://127.0.0.1:5000/")
-        print('html', html_data)
+# 计算函数运行时间
+def caculate_time(func):
+    import time
+
+    def inner(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+
+    return inner
 
 
-if __name__ == '__main__':
-    asyncio.run(run())
+request = Request(url="https://www.baidu.com/content-search.xml", callback="parse")
+d = {"url": "https://www.baidu.com/content-search.xml", "callback": "parse"}
+print(request)
+
+
+@caculate_time
+def test0():
+    for i in range(1000):
+        json.decode(js)
+
+@caculate_time
+def test1():
+    for i in range(1000):
+        orjson.loads(js)
+
+@caculate_time
+def test2():
+    for i in range(1000):
+        _json.loads(js)
+
+
+test0()
