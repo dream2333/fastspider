@@ -1,6 +1,7 @@
 from spider.spider import Spider
-
+from tests.testitem import Item
 from models import Request, Response
+
 
 class TestSpider(Spider):
     def start_requests(self):
@@ -10,12 +11,11 @@ class TestSpider(Spider):
                 "https://www.baidu.com/content-search.xml",
             )
 
-    def parse(self, response:Response):
+    def parse(self, response: Response):
         print("第二层")
         yield Request("https://www.baidu.com/content-search.xml", callback="parse2")
 
-    def parse2(self, response:Response):
-        text = response.text
+    def parse2(self, response: Response):
         print(response.encoding)
         print("第三层")
-
+        yield Item(url=response.url)

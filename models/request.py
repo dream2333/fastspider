@@ -2,13 +2,7 @@ from typing import Any
 from msgspec import Struct
 
 
-class BaseRequest:
-    @classmethod
-    def build_from_dict(self, request_dict):
-        return Request(**request_dict)
-
-
-class Request(BaseRequest, Struct, omit_defaults=True):
+class Request(Struct, omit_defaults=True):
     url: str
     callback: str = None
     method: str = "GET"

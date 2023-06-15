@@ -1,10 +1,9 @@
-from msgspec import Struct
-from abc import ABCMeta
+from msgspec import Struct,structs
 
 
-class BaseItem(metaclass=ABCMeta):
-    def __init__(self, name, price):
-        ...
-
+class BaseItem(Struct, omit_defaults=True):
     def fingerprint(self):
         return "TODO"
+
+    def asdict(self):
+        return structs.asdict(self)

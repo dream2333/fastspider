@@ -11,7 +11,7 @@ async def main():
     SPIDER_NAME = "tests.testspider.TestSpider"
     spider_object = SpiderLoader.load_spider(SPIDER_NAME)
     async with Scheduler(spider_object) as scheduler:
-        await scheduler.open_spider()
+        await scheduler.start_crawler()
 
 def suppress_keyboard_interrupt_message():
     old_excepthook = sys.excepthook

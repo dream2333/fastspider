@@ -1,5 +1,5 @@
 import sys
-from  multiprocessing import Process, SimpleQueue
+from  multiprocessing import Process, Queue
 import time
 
 
@@ -8,16 +8,16 @@ for i in range(100):
     msg_list.append("result.Test_data")
 
 def worker(q): 
-    for _ in range(100000):
+    for _ in range(500000):
         q.get()
  
     sys.exit(1)
  
 def main():
-    q = SimpleQueue()
+    q = Queue()
     p = Process(target=worker, args=(q,))
     p.start()
-    for _ in range(100000):
+    for _ in range(500000):
         q.put(msg_list)
     p.join()
 

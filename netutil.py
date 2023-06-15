@@ -21,8 +21,8 @@ URL = "http://www.baidu.com/content-search.xml"
 async def fetch_async():
     try:
         async with aiohttp.request("GET", url=await queue.get(), proxy=proxy) as response:
-            data = await response.text()
-            logger.info(data[74:95])
+            asyncio.create_task(response.text())
+
     except Exception as e:
         logger.error(e)
         ...
