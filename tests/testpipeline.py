@@ -4,7 +4,7 @@ from pipeline import BasePipeline
 class TestPipeline1(BasePipeline):
 
     def process_item(self, item):
-        print(item.asdict())
+        print(item.astuple())
 
     
 class TestPipeline2(BasePipeline):

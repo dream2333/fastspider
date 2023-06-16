@@ -1,45 +1,38 @@
-from msgspec import Struct, msgpack, json
-import json as _json
-import orjson
-from models import Request
+import datetime
+from multiprocessing.reduction import send_handle
+import time
+from aiokafka import AIOKafkaProducer
+import asyncio
 
-js = None
-with open("test.json", "rb") as f:
-    js = f.read()
-
-
-# 计算函数运行时间
-def caculate_time(func):
-    import time
-
-    def inner(*args, **kwargs):
-        start = time.time()
-        func(*args, **kwargs)
-        end = time.time()
-        print(end - start)
-
-    return inner
+text = b"1234567891"
 
 
-request = Request(url="https://www.baidu.com/content-search.xml", callback="parse")
-d = {"url": "https://www.baidu.com/content-search.xml", "callback": "parse"}
-print(request)
+async def send(times, producer: AIOKafkaProducer):
+    for i in range(times):
+        f = await producer.send("my_topic", text)
 
 
-@caculate_time
-def test0():
-    for i in range(1000):
-        json.decode(js)
-
-@caculate_time
-def test1():
-    for i in range(1000):
-        orjson.loads(js)
-
-@caculate_time
-def test2():
-    for i in range(1000):
-        _json.loads(js)
+async def send_wait(times, producer: AIOKafkaProducer):
+    for i in range(times):
+        await producer.send_and_wait("my_topic", text)
 
 
-test0()
+async def send_batch(times, producer: AIOKafkaProducer):
+    batch = producer.create_batch()
+    for i in range(times):
+        batch.append(key=None, timestamp=None, value=text)
+    print(await producer.send_batch(batch, "my_topic", partition=None))
+    await asyncio.sleep(100)
+
+
+async def main():
+    producer = AIOKafkaProducer(bootstrap_servers="localhost:29092")
+    await producer.start()
+    start = time.monotonic()
+    await send(100000, producer)
+    end = time.monotonic()
+    print(end - start)
+    await producer.stop()
+
+
+asyncio.run(main())

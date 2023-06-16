@@ -1,61 +1,99 @@
-import asyncio
-from typing import Any, Coroutine, List, Optional, Self
+from typing import Any, Optional, Self, List
 from aiohttp import ClientResponse
-from aiohttp.client import ClientSession
-from aiohttp.client_reqrep import RequestInfo
-from aiohttp.helpers import BaseTimerContext
-from aiohttp.tracing import Trace
-from aiohttp.typedefs import DEFAULT_JSON_DECODER, JSONDecoder
 import orjson
-from yarl import URL
 from models import Request
+from parsel import Selector, SelectorList
+from utils import lazy_porperty
 
 
 class Response:
     __slots__ = (
-        "url",
         "raw_response",
         "status",
         "headers",
         "cookies",
-        "body",
+        "content",
         "meta",
         "request",
-        "__text",
-        "__json",
-        "__encoding",
     )
 
     @classmethod
-    async def build(cls, request: Request, response: ClientResponse) -> None:
+    async def build(cls, request: Request, response: ClientResponse) -> Self:
+        """
+        从给定的请求和响应构建Response对象。
+
+        Args:
+            request (Request): 请求对象。
+            response (ClientResponse): 响应对象。
+
+        Returns:
+            Self: 构建的Response对象。
+        """
         obj = cls.__new__(cls)
-        obj.url = response.url
         obj.raw_response = response
         obj.status = response.status
         obj.headers = response.headers
         obj.cookies = response.cookies
-        obj.body = await response.read()
+        obj.content = await response.read()
         obj.meta = request.meta
         obj.request = request
-        obj.__text = None
-        obj.__json = None
-        obj.__encoding = None
         return obj
 
-    @property
+    @lazy_porperty
+    def url(self) -> str:
+        return self.raw_response.url.human_repr()
+
+    @lazy_porperty
     def text(self) -> str:
-        if self.__text is None:
-            self.__text = self.body.decode(self.encoding)
-        return self.__text
+        return self.content.decode(self.encoding)
 
-    @property
+    @lazy_porperty
     def json(self) -> Any:
-        if self.__json is None:
-            self.__json = orjson.loads(self.text)
-        return self.__json
+        return orjson.loads(self.text)
 
-    @property
+    @lazy_porperty
     def encoding(self) -> str:
-        if self.__encoding is None:
-            self.__encoding = self.raw_response.get_encoding()
-        return self.__encoding
+        return self.raw_response.get_encoding()
+
+    @lazy_porperty
+    def selector(self) -> Selector:
+        return Selector(text=self.text)
+
+    def xpath(self, query: str, url: Optional[str] = None) -> SelectorList[Selector]:
+        """
+        返回匹配给定XPath查询的Selector对象列表。
+
+        Args:
+            query (str): 要匹配的XPath查询。
+            url (Optional[str]): 用于解析XPath查询中的相对URL的URL。
+
+        Returns:
+            SelectorList[Selector]: 匹配给定XPath查询的Selector对象列表。
+        """
+        return self.selector.xpath(query, url=url)
+
+    def re(self, query: str, replace_entities: bool = True) -> List[str]:
+        """
+        返回匹配给定正则表达式的字符串列表。
+
+        Args:
+            query (str): 要匹配的正则表达式。
+            replace_entities (bool): 是否替换HTML实体。
+
+        Returns:
+            List[str]: 匹配给定正则表达式的字符串列表。
+        """
+        return self.selector.re(query, replace_entities)
+
+    def re_first(self, query: str, replace_entities: bool = True) -> List[str]:
+        """
+        返回匹配给定正则表达式的第一个字符串。
+
+        Args:
+            query (str): 要匹配的正则表达式。
+            replace_entities (bool): 是否替换HTML实体。
+
+        Returns:
+            List[str]: 匹配给定正则表达式的第一个字符串。
+        """
+        return self.selector.re(query, replace_entities)[:1]

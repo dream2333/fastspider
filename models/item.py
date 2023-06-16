@@ -1,4 +1,4 @@
-from msgspec import Struct,structs
+from msgspec import Struct, structs
 
 
 class BaseItem(Struct, omit_defaults=True):
@@ -7,3 +7,6 @@ class BaseItem(Struct, omit_defaults=True):
 
     def asdict(self):
         return structs.asdict(self)
+
+    def astuple(self):
+        return structs.astuple(self)

@@ -3,14 +3,15 @@ from typing import Callable, Generator, AsyncGenerator, Coroutine
 from core.downloader import Downloader
 from loguru import logger
 from models import Request, Response, BaseItem
+from core.queue import BaseQueue
 import settings
 
 
 class Scheduler:
-    def __init__(self, spider_object) -> None:
+    def __init__(self, spider_object,queue:BaseQueue) -> None:
         self.spider_object = spider_object
-        self.request_queue = asyncio.Queue()
-        self.item_queue = asyncio.Queue()
+        self.request_queue = queue
+        self.item_queue = queue
         self.downloader = Downloader()
         self.pipelines = self.create_pipelines(settings.PIPELINES)
 

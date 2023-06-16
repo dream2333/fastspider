@@ -19,4 +19,4 @@ class Request(Struct, omit_defaults=True):
 
 if __name__ == "__main__":
     request = Request(url="https://www.baidu.com/content-search.xml", callback="parse")
-    print(request.__struct_config__)
+    print(request)
