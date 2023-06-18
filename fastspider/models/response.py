@@ -1,21 +1,13 @@
 from typing import Any, Optional, Self, List
 from aiohttp import ClientResponse
 import orjson
-from models import Request
+from fastspider.models import Request
 from parsel import Selector, SelectorList
-from utils import lazy_porperty
+from fastspider.utils import lazy_porperty
 
 
 class Response:
-    __slots__ = (
-        "raw_response",
-        "status",
-        "headers",
-        "cookies",
-        "content",
-        "meta",
-        "request",
-    )
+
 
     @classmethod
     async def build(cls, request: Request, response: ClientResponse) -> Self:

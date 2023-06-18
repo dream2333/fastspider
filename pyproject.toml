@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fastcrawler"
+name = "fastspider"
 version = "0.1.0"
 description = ""
 authors = ["dream2333 <vincentqng@gmail.com>"]
@@ -7,17 +7,22 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiohttp = {extras = ["speedups"], version = "^3.8.4"}
-uvloop = "^0.17.0"
 orjson = "^3.9.1"
 loguru = "^0.7.0"
 parsel = "^1.8.1"
 msgspec = "^0.16.0"
-aiokafka = "^0.8.1"
+aiokafka = {extras = ["lz4"], version = "^0.8.1"}
+aiohttp = "^3.8.4"
+aiodns = "^3.0.0"
+faust-cchardet = "^2.1.18"
+brotli = "^1.0.9"
+redis = {extras = ["hiredis"], version = "^4.5.5"}
 
+[tool.poetry.group.unix.dependencies]
+uvloop = "^0.17.0"
 
 [tool.poetry.group.dev.dependencies]
-memray = "^1.8.0"
+pytest = "^7.3.2"
 
 [build-system]
 requires = ["poetry-core"]

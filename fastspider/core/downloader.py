@@ -1,8 +1,6 @@
-from email import header
-from enum import verify
 import aiohttp
 import orjson
-from models import Request, Response
+from fastspider.models import Request, Response
 
 
 def serializer(jsonstr):

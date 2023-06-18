@@ -1,9 +1,9 @@
 from asyncio import Queue as AsyncioQueue
 from abc import ABCMeta, abstractmethod
-from utils import lazy_porperty
+from fastspider.utils import lazy_porperty
 from aiokafka import AIOKafkaProducer
 
-class BaseQueue(metaclass=ABCMeta):
+class Queue(metaclass=ABCMeta):
     @abstractmethod
     def put(self, obj):
         pass
@@ -12,7 +12,7 @@ class BaseQueue(metaclass=ABCMeta):
     def get(self):
         pass
 
-class KafkaQueue(BaseQueue):
+class KafkaQueue(Queue):
     __slots__ = ("config",)
     def __init__(self,config) -> None:
         self.config = config

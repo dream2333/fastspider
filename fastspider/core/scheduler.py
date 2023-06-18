@@ -1,22 +1,19 @@
 import asyncio
 from typing import Callable, Generator, AsyncGenerator, Coroutine
-from core.downloader import Downloader
+from fastspider.core.downloader import Downloader
 from loguru import logger
-from models import Request, Response, BaseItem
-from core.queue import BaseQueue
-import settings
+from fastspider.models import Request, Response, BaseItem
 
 
 class Scheduler:
-    def __init__(self, spider_object,queue:BaseQueue) -> None:
+    def __init__(self, spider_object, request_queue, item_queue, pipelines):
         self.spider_object = spider_object
-        self.request_queue = queue
-        self.item_queue = queue
+        self.request_queue = request_queue
+        self.item_queue = item_queue
         self.downloader = Downloader()
-        self.pipelines = self.create_pipelines(settings.PIPELINES)
+        self.pipelines = pipelines
 
-    def create_pipelines(self, pipelines):
-        return [pipeline() for pipeline in pipelines]
+
 
     async def start_crawler(self):
         spider_producer = self.add_requests_items_to_queue(None, "start_requests")

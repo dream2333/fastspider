@@ -1,13 +1,14 @@
-from pipeline import BasePipeline
+from fastspider.pipeline import Pipeline
 
 
-class TestPipeline1(BasePipeline):
+class ExamplePipeline1(Pipeline):
 
     def process_item(self, item):
+        print("管道1")
         print(item.astuple())
 
     
-class TestPipeline2(BasePipeline):
+class ExamplePipeline2(Pipeline):
 
     def process_item(self, item):
         print("管道2")

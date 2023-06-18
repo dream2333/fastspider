@@ -1,15 +1,13 @@
-from spider.spider import Spider
-from tests.testitem import Item
-from models import Request, Response
+from fastspider.spider.spider import Spider
+from example.testitem import Item
+from fastspider.models import Request, Response
 
 
-class TestSpider(Spider):
+class ExampleSpider(Spider):
     def start_requests(self):
         print("第一层")
         for i in range(2):
-            yield Request(
-                "https://www.baidu.com/content-search.xml",
-            )
+            yield Request("https://www.baidu.com/content-search.xml")
 
     def parse(self, response: Response):
         print("第二层")
