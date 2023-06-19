@@ -1,7 +1,6 @@
 import sys
-from fastspider.engine import main
+from fastspider.core.engine import main
 import asyncio
-from settings import PIPELINES
 
 
 def suppress_keyboard_interrupt_message():

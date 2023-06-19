@@ -6,7 +6,7 @@ import sys
 from fastspider.core.queue import AsyncioQueue
 from fastspider.core.scheduler import Scheduler
 from fastspider.pipeline import Pipeline
-from fastspider.spider.loader import Loader
+from fastspider.loader import Loader
 from fastspider.spider.spider import Spider
 
 
