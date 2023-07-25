@@ -16,7 +16,9 @@ class Scheduler:
 
 
     async def start_crawler(self):
+        # 启动生产者start_requests，开始生成Request
         spider_producer = self.add_requests_items_to_queue(None, "start_requests")
+        # 启动消费者，开始下载Request
         request_consumer = self.start_process_requests()
         item_consumer = self.start_process_item()
         await asyncio.gather(spider_producer, request_consumer, item_consumer)
@@ -29,7 +31,7 @@ class Scheduler:
     async def start_process_item(self):
         while True:
             item = await self.item_queue.get()
-            asyncio.create_task(self.send_item_to_pipe(item))
+            asyncio.create_task(self.send_item_to_pipeline(item))
 
     async def add_requests_items_to_queue(self, response: Response, cb_name: str):
         # 获取callback
@@ -78,7 +80,7 @@ class Scheduler:
         else:
             await self.add_requests_items_to_queue(response, request.callback)
 
-    async def send_item_to_pipe(self, item: BaseItem):
+    async def send_item_to_pipeline(self, item: BaseItem):
         for pipeline in self.pipelines:
             if isinstance(pipeline.process_item, Coroutine):
                 item = await pipeline.process_item(item)

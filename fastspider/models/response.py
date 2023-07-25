@@ -3,7 +3,7 @@ from aiohttp import ClientResponse
 import orjson
 from fastspider.models import Request
 from parsel import Selector, SelectorList
-from fastspider.utils import lazy_porperty
+from fastspider.utils import lazy_proxy
 
 
 class Response:
@@ -31,23 +31,23 @@ class Response:
         obj.request = request
         return obj
 
-    @lazy_porperty
+    @lazy_proxy
     def url(self) -> str:
         return self.raw_response.url.human_repr()
 
-    @lazy_porperty
+    @lazy_proxy
     def text(self) -> str:
         return self.content.decode(self.encoding)
 
-    @lazy_porperty
+    @lazy_proxy
     def json(self) -> Any:
         return orjson.loads(self.text)
 
-    @lazy_porperty
+    @lazy_proxy
     def encoding(self) -> str:
         return self.raw_response.get_encoding()
 
-    @lazy_porperty
+    @lazy_proxy
     def selector(self) -> Selector:
         return Selector(text=self.text)
 
